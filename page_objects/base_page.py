@@ -14,6 +14,22 @@ class BasePage:
         return WebDriverWait(self.driver, timeout).until(
             EC.visibility_of_element_located(locator)
         )
+    
+    def get_url_new_tab(self, locator, timeout=10):
+
+        old_tabs = len(self.driver.window_handles)
+        self.click_element(locator)
+        WebDriverWait(self.driver, timeout).until(lambda d: len(d.window_handles) > old_tabs)
+        self.driver.switch_to.window(self.driver.window_handles[-1])
+        WebDriverWait(self.driver, timeout).until(lambda d: d.current_url != "about:blank")
+        return self.driver.current_url
+    
+    def get_url_same_tab(self, locator, timeout=10):
+        
+        old_url = self.driver.current_url
+        self.click_element(locator)
+        WebDriverWait(self.driver, 10).until(EC.url_changes(old_url))
+        return self.driver.current_url
 
     def scroll_to_element(self, element):
         self.driver.execute_script(

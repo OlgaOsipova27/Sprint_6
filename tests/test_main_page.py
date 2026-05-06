@@ -9,9 +9,9 @@ ROOT_PATH = Path(__file__).parent.parent
 sys.path.insert(0, str(ROOT_PATH))
 
 from page_objects.main_page import MainPage
-from page_objects.base_page import BasePage
-from fixture.faq_data import FAQ_DATA
-from fixture.url_data import URL_SCOOTER, URL_DZEN
+from page_objects.order_page import CreateOrder
+from data.faq_data import FAQ_DATA
+from data.url_data import URL_SCOOTER, URL_DZEN
 from locators.main_page_locators import LocatorHeadderButton, LocatorOrderButtonMainPage
 from locators.order_page_locators import LocatorOrderForms
 
@@ -22,7 +22,7 @@ class TestMainPage:
     def setup_class(cls):
         
         cls.driver = webdriver.Firefox()
-        cls.wait = WebDriverWait(cls.driver, 10)
+        
 
 
     @allure.title('Проверка, что при нажатии на вопрос в разделе "Вопросы о важном" появляется соответствующий ответ')
@@ -32,10 +32,10 @@ class TestMainPage:
         self.driver.get(URL_SCOOTER)
 
         main_page = MainPage(self.driver)
-        bp = BasePage(self.driver)
+        
 
         main_page.open_answer_section(question_loc)
-        answer_elem = bp.wait_for_element(answer_loc)
+        answer_elem = main_page.wait_answer(answer_loc)
         text = main_page.text_of_answer(answer_loc)
 
         assert answer_elem.is_displayed()
@@ -47,7 +47,8 @@ class TestMainPage:
         
         self.driver.get(URL_SCOOTER)
         main_page = MainPage(self.driver)
-        url = main_page.url_after_click_on_logo_new_tab(LocatorHeadderButton.YANDEX_LOGO)
+        
+        url = main_page.url_after_click_on_Yandexlogo_new_tab()
  
         assert URL_DZEN == url
 
@@ -57,12 +58,11 @@ class TestMainPage:
         
         self.driver.get(URL_SCOOTER)
         main_page = MainPage(self.driver)
-        bp = BasePage(self.driver)
+        order_page = CreateOrder(self.driver)
+       
+        order_page.open_order_page()
 
-        main_page.click_element(LocatorOrderButtonMainPage.ORDER_BUTTON_ON_HEADDER)
-        bp.wait_for_element(LocatorOrderForms.ORDER_HEADER_SCOOTER)
-
-        url = main_page.url_after_click_on_logo_old_tab(LocatorHeadderButton.SCOOTER_LOGO)
+        url = main_page.url_after_click_on_SCOOTERlogo_old_tab()
 
         assert URL_SCOOTER == url
 
